@@ -2,7 +2,7 @@ asgiref==3.2.7
 autopep8==1.5.1
 Django==2.2.8
 django-redis==4.11.0
-djangorestframework==3.7.7
+djangorestframework==3.9.1
 djangorestframework-simplejwt==4.4.0
 entrypoints==0.3
 flake8==3.7.9
