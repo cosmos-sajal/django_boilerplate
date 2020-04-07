@@ -56,12 +56,15 @@ CACHES = {
 
 ```
 Keep adding your secret keys in this file.
+
 4. Run `docker build .` from the auth_app folder.
 5. Run `docker-compose build` to build the API and it's dependencies.
 6. Run `docker-compose up` to run all containers.
 7. Hit `localhost:8000/`, Django front page should come.
 You can check all the containers running using `docker ps`, and user `docker exec -it <container_id> sh` to enter any container.
-NOTE - If you get database not found, just enter the postgres container using the above command, and create a new database -
+
+
+#### NOTE - If you get database not found, just enter the postgres container using the above command, and create a new database -
 1. `docker exec -it <postgres container id> bash`.
 2. `psql -U postgres`
 3. `create database a`
