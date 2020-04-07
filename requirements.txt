@@ -1,6 +1,6 @@
 asgiref==3.2.7
 autopep8==1.5.1
-Django==2.2.8
+Django==2.2.10
 django-redis==4.11.0
 djangorestframework==3.7.7
 djangorestframework-simplejwt==4.4.0
