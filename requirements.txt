@@ -1,5 +1,8 @@
 asgiref==3.2.7
+autopep8==1.5.1
 Django==3.0.5
 djangorestframework==3.11.0
+psycopg2==2.8.5
+pycodestyle==2.5.0
 pytz==2019.3
 sqlparse==0.3.1
