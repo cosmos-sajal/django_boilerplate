@@ -17,7 +17,7 @@ This API will generate OTP and sets it in redis, you can extend the API to send 
 
 
 ## Tech Stack Used -
-Django, DjangoRestFramework, PostgreSQL, Redis, Docker
+Django, DjangoRestFramework, PostgreSQL, Redis, Docker, JWT Authentication.
 
 
 ## How to use this -
