@@ -67,4 +67,4 @@ You can check all the containers running using `docker ps`, and user `docker exe
 #### NOTE - If you get database not found, just enter the postgres container using the above command, and create a new database -
 1. `docker exec -it <postgres container id> bash`.
 2. `psql -U postgres`
-3. `create database a`
+3. `create database auth_app_dev`
