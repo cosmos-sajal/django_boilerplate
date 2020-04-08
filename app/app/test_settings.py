@@ -1,3 +1,4 @@
+import os
 from .settings import *
 
 # SECURITY WARNING: keep the secret key used in production secret!

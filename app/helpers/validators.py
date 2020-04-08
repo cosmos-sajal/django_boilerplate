@@ -2,7 +2,6 @@ import re
 
 
 def validate(regex, string):
-    print(re.search(regex, string))
     return True if re.search(regex, string) is not None else False
 
 
@@ -13,7 +12,8 @@ def is_valid_email(email):
 
 
 def is_strong_password(password):
-    regex = r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!#%*?&]{6,20}$"
+    regex = (r"^(?=.*[a-z])(?=.*[A-Z])"
+             r"(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!#%*?&]{6,20}$")
 
     return validate(regex, password)
 

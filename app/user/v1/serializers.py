@@ -3,9 +3,10 @@ from django.http import Http404
 from django.contrib.auth import get_user_model, authenticate
 from django.core.exceptions import ObjectDoesNotExist
 
+from .constants import OTP_PREFIX
 from helpers.cache_adapter import CacheAdapter
-from helpers.validators import is_valid_email, is_strong_password, is_valid_mobile_number
-from .constants import *
+from helpers.validators import is_valid_email, is_strong_password, \
+    is_valid_mobile_number
 
 
 class RegisterUserSerializer(serializers.Serializer):
@@ -36,16 +37,16 @@ class RegisterUserSerializer(serializers.Serializer):
         mobile_number = attrs.get('mobile_number')
 
         errors = {}
-        if is_valid_email(email) == False:
+        if not is_valid_email(email):
             errors['email'] = ["Not a valid email"]
 
         if self.does_user_exist(email=email):
             errors['email'] = ["User with this email already exist"]
 
-        if is_strong_password(attrs.get('password')) == False:
+        if not is_strong_password(attrs.get('password')):
             errors['password'] = ["Not a strong password"]
 
-        if is_valid_mobile_number(attrs.get('mobile_number')) == False:
+        if not is_valid_mobile_number(attrs.get('mobile_number')):
             errors['mobile_number'] = ["Not a valid mobile number"]
 
         if self.does_user_exist(mobile_number=mobile_number):
@@ -92,7 +93,8 @@ class EmailLoginSerializer(serializers.Serializer):
 
         if not user:
             raise serializers.ValidationError(
-                {'auth_failure': 'Unable to authenticate with provided credential'},
+                {'auth_failure':
+                    'Unable to authenticate with provided credential'},
                 code='authentication'
             )
 
@@ -124,7 +126,8 @@ class OTPLoginSerializer(serializers.Serializer):
 
         if not user:
             raise serializers.ValidationError(
-                {'auth_failure': 'Unable to authenticate with provided credential'},
+                {'auth_failure':
+                    'Unable to authenticate with provided credential'},
                 code='authentication'
             )
 
@@ -141,7 +144,7 @@ class OTPGenerateSerializer(serializers.Serializer):
         """
         mobile_number = attrs.get('mobile_number')
         try:
-            user = get_user_model().objects.get(mobile_number=mobile_number)
+            get_user_model().objects.get(mobile_number=mobile_number)
         except ObjectDoesNotExist:
             raise Http404
 

@@ -5,10 +5,11 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework.throttling import UserRateThrottle
 
-from .constants import *
+from .constants import OTP_PREFIX, OTP_EXPIRY_IN_SECONDS
 from helpers.cache_adapter import CacheAdapter
 from helpers.misc_helper import get_random_number
-from .serializers import RegisterUserSerializer, EmailLoginSerializer, OTPLoginSerializer, OTPGenerateSerializer
+from .serializers import RegisterUserSerializer, EmailLoginSerializer, \
+    OTPLoginSerializer, OTPGenerateSerializer
 
 
 class RegisterUserView(APIView):

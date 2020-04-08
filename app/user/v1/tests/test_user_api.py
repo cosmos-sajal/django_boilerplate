@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from helpers.cache_adapter import CacheAdapter
-from user.v1.constants import *
+from user.v1.constants import OTP_PREFIX
 
 
 REGISTER_URL = reverse('user:register-user')
@@ -60,7 +60,9 @@ class PublicUserAPITest(TestCase):
 
         res = self.client.post(REGISTER_URL, payload)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-        does_user_exist = get_user_model().objects.filter(email="test@gmail.com").exists()
+        does_user_exist = get_user_model().objects.filter(
+            email="test@gmail.com"
+        ).exists()
         self.assertTrue(does_user_exist)
 
     def test_register_user_empty_payload(self):
