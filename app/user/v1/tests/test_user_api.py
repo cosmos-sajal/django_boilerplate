@@ -8,8 +8,12 @@ from helpers.cache_adapter import CacheAdapter
 from user.v1.constants import *
 
 
+import sys
+
+
 REGISTER_URL = reverse('user:register-user')
 LOGIN_URL = reverse('user:login-user')
+GENERATE_OTP_URL = reverse('user:generate-otp')
 
 
 def create_user(**params):
@@ -23,6 +27,16 @@ def create_default_user():
         name="Test User",
         mobile_number="1234567890"
     )
+
+
+def set_otp(mobile_number='1234567890', otp='123456'):
+    obj = CacheAdapter()
+    obj.set(OTP_PREFIX + mobile_number, otp, 120)
+
+
+def get_otp(mobile_number='1234567890'):
+    obj = CacheAdapter()
+    return obj.get(OTP_PREFIX + mobile_number)
 
 
 class PublicUserAPITest(TestCase):
@@ -136,9 +150,7 @@ class PublicUserAPITest(TestCase):
             "otp": "123456"
         }
 
-        # set OTP in cache
-        obj = CacheAdapter()
-        obj.set(OTP_PREFIX + payload['mobile_number'], payload['otp'], 120)
+        set_otp()
 
         res = self.client.post(LOGIN_URL, payload)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
@@ -236,3 +248,33 @@ class PublicUserAPITest(TestCase):
 
         res = self.client.post(LOGIN_URL, payload)
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_generate_otp_success(self):
+        """
+        Test if the OTP is generated successfully for the user
+        """
+        create_default_user()
+
+        payload = {
+            'mobile_number': '1234567890'
+        }
+
+        res = self.client.post(GENERATE_OTP_URL, payload)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+        otp = get_otp()
+        self.assertIsNotNone(otp)
+
+    def test_generate_otp_non_existent_user(self):
+        """
+        Test if the OTP is not generated for non existent user
+        """
+        payload = {
+            'mobile_number': '1234567898'
+        }
+
+        res = self.client.post(GENERATE_OTP_URL, payload)
+        self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
+
+        otp = get_otp(payload['mobile_number'])
+        self.assertIsNone(otp)
