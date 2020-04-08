@@ -53,11 +53,11 @@ class LoginUserView(APIView):
         """
         if serializer.is_valid():
             user = self.get_user(serializer.data)
-            refresh_token = TokenObtainPairSerializer.get_token(user)
+            refresh = TokenObtainPairSerializer.get_token(user)
 
             return Response({
-                'refresh_token': str(refresh_token),
-                'access_token': str(refresh_token.access_token)
+                'refresh': str(refresh),
+                'access': str(refresh.access_token)
             }, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

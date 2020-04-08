@@ -8,12 +8,10 @@ from helpers.cache_adapter import CacheAdapter
 from user.v1.constants import *
 
 
-import sys
-
-
 REGISTER_URL = reverse('user:register-user')
 LOGIN_URL = reverse('user:login-user')
 GENERATE_OTP_URL = reverse('user:generate-otp')
+REFRESH_TOKEN_URL = reverse('user:refresh-token')
 
 
 def create_user(**params):
@@ -135,8 +133,8 @@ class PublicUserAPITest(TestCase):
 
         res = self.client.post(LOGIN_URL, payload)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertIn('access_token', res.data)
-        self.assertIn('refresh_token', res.data)
+        self.assertIn('access', res.data)
+        self.assertIn('refresh', res.data)
 
     def test_login_user_success_using_otp(self):
         """
@@ -154,8 +152,8 @@ class PublicUserAPITest(TestCase):
 
         res = self.client.post(LOGIN_URL, payload)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertIn('access_token', res.data)
-        self.assertIn('refresh_token', res.data)
+        self.assertIn('access', res.data)
+        self.assertIn('refresh', res.data)
 
     def test_login_user_empty_payload(self):
         """
@@ -278,3 +276,27 @@ class PublicUserAPITest(TestCase):
 
         otp = get_otp(payload['mobile_number'])
         self.assertIsNone(otp)
+
+    def test_refersh_token_success(self):
+        """
+        Test if the API returns a success
+        """
+        create_default_user()
+
+        login_payload = {
+            "email": "test@gmail.com",
+            "password": "TestPassword$87"
+        }
+
+        login_res = self.client.post(LOGIN_URL, login_payload)
+
+        refresh_token = login_res.data['refresh']
+
+        refresh_payload = {
+            'refresh': refresh_token
+        }
+
+        refersh_res = self.client.post(REFRESH_TOKEN_URL, refresh_payload)
+        self.assertEqual(refersh_res.status_code, status.HTTP_200_OK)
+        self.assertIn('access', refersh_res.data)
+        self.assertIn('refresh', refersh_res.data)
