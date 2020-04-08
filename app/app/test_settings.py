@@ -4,10 +4,6 @@ from .settings import *
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'SECRET_KEY'
 
-# Application definition
-
-INSTALLED_APPS.append('django_nose')
-
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
@@ -34,12 +30,3 @@ CACHES = {
 
 # REST FRAMEWORK
 REST_FRAMEWORK = {}
-
-# Use nose to run all tests
-TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
-
-# Tell nose to measure coverage on the 'foo' and 'bar' apps
-NOSE_ARGS = [
-    '--with-coverage',
-    '--cover-package=user,helpers',
-]
