@@ -18,6 +18,9 @@ This API has default Django Throttling class (UserThrottle), and is set to 3/min
 #### `POST /api/v1/user/generate/otp`
 This API will generate OTP and sets it in redis, you can extend the API to send the OTP on the SMS sender of your choice.
 
+#### `POST /api/v1/user/refresh/token`
+This API will generate new access and refresh token for the given refresh token specified to it.
+
 
 ## Tech Stack Used -
 Django, DjangoRestFramework, PostgreSQL, Redis, Docker, JWT Authentication.
