@@ -21,6 +21,8 @@ This API will generate OTP and sets it in redis, you can extend the API to send 
 #### `POST /api/v1/user/refresh/token`
 This API will generate new access and refresh token for the given refresh token specified to it.
 
+#### NOTE -
+You can check all the APIs on http://localhost:8000/#/ (swagger has been integrated)
 
 ## Tech Stack Used -
 Django, DjangoRestFramework, PostgreSQL, Redis, Docker, JWT Authentication.
