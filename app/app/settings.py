@@ -71,6 +71,13 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'app.wsgi.application'
 
+# REST framework settings
+REST_FRAMEWORK = {
+    'DEFAULT_THROTTLE_RATES': {
+        'user': '3/min'
+    }
+}
+
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases

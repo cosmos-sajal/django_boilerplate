@@ -3,6 +3,7 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework.throttling import UserRateThrottle
 
 from .constants import *
 from helpers.cache_adapter import CacheAdapter
@@ -34,6 +35,7 @@ class LoginUserView(APIView):
     """
     Authenticates a user
     """
+    throttle_classes = [UserRateThrottle]
 
     def get_user(self, data):
         """
