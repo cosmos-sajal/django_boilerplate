@@ -7,10 +7,6 @@ services:
 
 before_script:
   - pip install docker-compose
-  - pip install codecov
-  - pip install coverage
 
 script:
   - docker-compose run app sh -c "python manage.py test --settings=app.test_settings && flake8"
-  - codecov
-  - coverage run test
