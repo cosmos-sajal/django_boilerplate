@@ -4,8 +4,25 @@ from django.contrib.auth import get_user_model
 from rest_framework import status
 from rest_framework.test import APIClient
 
+from helpers.cache_adapter import CacheAdapter
+from user.v1.constants import *
+
 
 REGISTER_URL = reverse('user:register-user')
+LOGIN_URL = reverse('user:login-user')
+
+
+def create_user(**params):
+    return get_user_model().objects.create_user(**params)
+
+
+def create_default_user():
+    return get_user_model().objects.create_user(
+        email="test@gmail.com",
+        password="TestPassword$87",
+        name="Test User",
+        mobile_number="1234567890"
+    )
 
 
 class PublicUserAPITest(TestCase):
@@ -89,3 +106,133 @@ class PublicUserAPITest(TestCase):
         res = self.client.post(REGISTER_URL, payload)
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn('confirm_password', res.data)
+
+    def test_login_user_success_using_password(self):
+        """
+        Test if the user is logged in succesfully and
+        has recieved the tokens - using email/password
+        """
+        create_default_user()
+
+        payload = {
+            "email": "test@gmail.com",
+            "password": "TestPassword$87"
+        }
+
+        res = self.client.post(LOGIN_URL, payload)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertIn('access_token', res.data)
+        self.assertIn('refresh_token', res.data)
+
+    def test_login_user_success_using_otp(self):
+        """
+        Test if the user is logged in successfully and
+        has received the tokens - using mobile_number/otp
+        """
+        create_default_user()
+
+        payload = {
+            "mobile_number": "1234567890",
+            "otp": "123456"
+        }
+
+        # set OTP in cache
+        obj = CacheAdapter()
+        obj.set(OTP_PREFIX + payload['mobile_number'], payload['otp'], 120)
+
+        res = self.client.post(LOGIN_URL, payload)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertIn('access_token', res.data)
+        self.assertIn('refresh_token', res.data)
+
+    def test_login_user_empty_payload(self):
+        """
+        Test if we get 400 on empty payload
+        """
+        res = self.client.post(LOGIN_URL, {})
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn('detail', res.data)
+
+    def test_login_user_wrong_payload1(self):
+        """
+        Test if API returns 400 when passed email id and OTP
+        """
+        create_default_user()
+
+        payload = {
+            "email": "test@gmail.com",
+            "otp": "123456"
+        }
+
+        res = self.client.post(LOGIN_URL, payload)
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn('password', res.data)
+
+    def test_login_user_wrong_payload2(self):
+        """
+        Test if API returns 400 when passed mobile_number and passwor
+        """
+        create_default_user()
+
+        payload = {
+            'mobile_number': '1234567890',
+            'password': 'TestPassword$87'
+        }
+
+        res = self.client.post(LOGIN_URL, payload)
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn('otp', res.data)
+
+    def test_login_user_non_existent_user1(self):
+        """
+        Test if API returns 404 when non existent user
+        is login
+        """
+        payload = {
+            'email': 'test@gmail.com',
+            'password': 'TestPassword$87'
+        }
+
+        res = self.client.post(LOGIN_URL, payload)
+        self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_login_user_non_existent_user2(self):
+        """
+        Test if API returns 404 when non existent user
+        is login
+        """
+        payload = {
+            'mobile_number': '1234567890',
+            'otp': '123456'
+        }
+
+        res = self.client.post(LOGIN_URL, payload)
+        self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_login_user_wrong_password(self):
+        """
+        Test if the user is bit logged in when given wrong password
+        """
+        create_default_user()
+
+        payload = {
+            "email": "test@gmail.com",
+            "password": "TestPassword$87556"
+        }
+
+        res = self.client.post(LOGIN_URL, payload)
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_login_user_wrong_otp(self):
+        """
+        Test if the user is bit logged in when given wrong otp
+        """
+        create_default_user()
+
+        payload = {
+            'mobile_number': '1234567890',
+            'otp': '1234567'
+        }
+
+        res = self.client.post(LOGIN_URL, payload)
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)

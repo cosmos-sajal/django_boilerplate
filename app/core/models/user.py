@@ -46,3 +46,6 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModel):
     objects = UserManager()
 
     USERNAME_FIELD = 'email'
+
+    def __str__(self):
+        return self.mobile_number + self.password

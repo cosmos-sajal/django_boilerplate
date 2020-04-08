@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from django.http import Http404
 from django.contrib.auth import get_user_model, authenticate
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -77,6 +78,12 @@ class EmailLoginSerializer(serializers.Serializer):
         """
         Validates the email id and password
         """
+        email = attrs.get('email')
+        try:
+            get_user_model().objects.get(email=email)
+        except ObjectDoesNotExist:
+            raise Http404
+
         user = authenticate(
             request=self.context.get('request'),
             username=attrs.get('email'),
@@ -85,7 +92,7 @@ class EmailLoginSerializer(serializers.Serializer):
 
         if not user:
             raise serializers.ValidationError(
-                {'auth_failuer': 'Unable to authenticate with provided credential'},
+                {'auth_failure': 'Unable to authenticate with provided credential'},
                 code='authentication'
             )
 
@@ -102,6 +109,11 @@ class OTPLoginSerializer(serializers.Serializer):
         mobile number
         """
         mobile_number = attrs.get('mobile_number')
+        try:
+            get_user_model().objects.get(mobile_number=mobile_number)
+        except ObjectDoesNotExist:
+            raise Http404
+
         key = OTP_PREFIX + mobile_number
         param_otp = attrs.get('otp')
         cache_adapter_obj = CacheAdapter()
@@ -112,7 +124,7 @@ class OTPLoginSerializer(serializers.Serializer):
 
         if not user:
             raise serializers.ValidationError(
-                {'auth_failuer': 'Unable to authenticate with provided credential'},
+                {'auth_failure': 'Unable to authenticate with provided credential'},
                 code='authentication'
             )
 
@@ -131,7 +143,6 @@ class OTPGenerateSerializer(serializers.Serializer):
         try:
             user = get_user_model().objects.get(mobile_number=mobile_number)
         except ObjectDoesNotExist:
-            raise serializers.ValidationError(
-                {'detail': 'Mobile Number does not exist'})
+            raise Http404
 
         return attrs
