@@ -11,6 +11,7 @@ This API will register user and create them in core_user table in DB after param
 #### `POST /api/v1/user/login`
 This API will return access and refresh token after authenticating the user.
 Works both with emai-password and mobile_number-otp pairs.
+This API has default Django Throttling class (UserThrottle), and is set to 3/min
 
 #### `POST /api/v1/user/generate/otp`
 This API will generate OTP and sets it in redis, you can extend the API to send the OTP on the SMS sender of your choice.
