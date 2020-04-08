@@ -1,5 +1,7 @@
 # Authentication APIs written in Django RestFramework
 
+https://travis-ci.org/cosmos-sajal/auth_app.svg?branch=master
+
 This is a base repository written in Django and Django Rest Framework that can be used for setting up authentication for your Django Projects.
 
 
