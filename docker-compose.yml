@@ -43,6 +43,19 @@ services:
       - ./app:/app
     depends_on:
       - broker
+      - redis
+
+  celery-beat:
+    build: .
+    image: *app
+    restart: always
+    env_file: *envfile
+    command: ["celery", "beat", "--app=worker.worker.app", "--loglevel=INFO"]
+    volumes:
+      - ./app:/app
+    depends_on:
+      - broker
+      - redis
 
   broker:
     image: rabbitmq:3

@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 from datetime import timedelta
 
 import os
+from celery.schedules import crontab
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -176,18 +177,30 @@ STATIC_URL = '/static/'
 
 AUTH_USER_MODEL = 'core.User'
 
+# celery-beat config
+
+CELERY_BEAT_SCHEDULE = {
+    "hello-task": {
+        "task": "crons.demo_cron.hello",
+        "schedule": crontab()
+    }
+}
+
 # Celery config
 
 CELERY = {
     'BROKER_URL': 'BROKER_URL',
     'CELERY_RESULT_BACKEND': 'CELERY_RESULT_BACKEND',
-    'CELERY_IMPORTS': ('worker.tasks', ),
+    'CELERY_IMPORTS': ('worker.tasks', 'crons.demo_cron'),
     'CELERY_TASK_SERIALIZER': 'json',
     'CELERY_RESULT_SERIALIZER': 'json',
     'CELERY_ACCEPT_CONTENT': ['json'],
+    'CELERYBEAT_SCHEDULE': CELERY_BEAT_SCHEDULE
 }
 
+
 # Email config
+
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_USE_TLS = True
