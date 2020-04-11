@@ -1,2 +1,2 @@
 [flake8]
-exclude = migrations, __pycache__,manage.py,settings.py,core/models/__init__.py,secrets.py,test_settings.py
+exclude = migrations, __pycache__,manage.py,settings.py,core/models/__init__.py,secrets.py,test_settings.py,app/__init__.py
