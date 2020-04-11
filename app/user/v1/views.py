@@ -25,7 +25,7 @@ class RegisterUserView(APIView):
         """
         serializer = RegisterUserSerializer(data=request.data)
         if serializer.is_valid():
-            # serializer.save()
+            serializer.save()
             send_welcome_email.delay(
                 request.data['email'], request.data['name'])
 
