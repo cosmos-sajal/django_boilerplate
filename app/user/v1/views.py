@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework.throttling import UserRateThrottle
 
+from worker.tasks import send_email
 from .constants import OTP_PREFIX, OTP_EXPIRY_IN_SECONDS
 from helpers.cache_adapter import CacheAdapter
 from helpers.misc_helper import get_random_number
@@ -25,6 +26,7 @@ class RegisterUserView(APIView):
         serializer = RegisterUserSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
+            send_email.delay(request.data['email'], "Welcome")
 
             return Response({'response': 'User Created!'},
                             status=status.HTTP_201_CREATED)

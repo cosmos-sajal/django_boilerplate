@@ -175,3 +175,14 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 AUTH_USER_MODEL = 'core.User'
+
+# Celery config
+
+CELERY = {
+    'BROKER_URL': 'BROKER_URL',
+    'CELERY_RESULT_BACKEND': 'CELERY_RESULT_BACKEND',
+    'CELERY_IMPORTS': ('worker.tasks', ),
+    'CELERY_TASK_SERIALIZER': 'json',
+    'CELERY_RESULT_SERIALIZER': 'json',
+    'CELERY_ACCEPT_CONTENT': ['json'],
+}

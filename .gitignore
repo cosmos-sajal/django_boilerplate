@@ -130,3 +130,4 @@ dmypy.json
 
 # secrets file
 app/app/secrets.py
+env.env
