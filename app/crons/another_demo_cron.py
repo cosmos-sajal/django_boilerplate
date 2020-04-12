@@ -6,7 +6,7 @@ logger = get_task_logger(__name__)
 
 
 @celery_app.task
-def hello():
-    logger.info("Cron 1")
+def hello2():
+    logger.info("Cron 2")
 
     return True

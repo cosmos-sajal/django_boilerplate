@@ -180,8 +180,12 @@ AUTH_USER_MODEL = 'core.User'
 # celery-beat config
 
 CELERY_BEAT_SCHEDULE = {
-    "hello-task": {
+    "cron-1": {
         "task": "crons.demo_cron.hello",
+        "schedule": crontab()
+    },
+    "cron-2": {
+        "task": "crons.another_demo_cron.hello2",
         "schedule": crontab()
     }
 }
@@ -191,7 +195,7 @@ CELERY_BEAT_SCHEDULE = {
 CELERY = {
     'BROKER_URL': 'BROKER_URL',
     'CELERY_RESULT_BACKEND': 'CELERY_RESULT_BACKEND',
-    'CELERY_IMPORTS': ('worker.tasks', 'crons.demo_cron'),
+    'CELERY_IMPORTS': ('worker.tasks', 'crons'),
     'CELERY_TASK_SERIALIZER': 'json',
     'CELERY_RESULT_SERIALIZER': 'json',
     'CELERY_ACCEPT_CONTENT': ['json'],
