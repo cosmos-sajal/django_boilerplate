@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 from datetime import timedelta
 
 import os
+import pybrake
 from celery.schedules import crontab
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -53,6 +54,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'pybrake.django.AirbrakeMiddleware',
 ]
 
 ROOT_URLCONF = 'app.urls'
@@ -178,7 +180,6 @@ STATIC_URL = '/static/'
 AUTH_USER_MODEL = 'core.User'
 
 # celery-beat config
-
 CELERY_BEAT_SCHEDULE = {
     "cron-1": {
         "task": "crons.demo_cron.hello",
@@ -191,7 +192,6 @@ CELERY_BEAT_SCHEDULE = {
 }
 
 # Celery config
-
 CELERY = {
     'BROKER_URL': 'BROKER_URL',
     'CELERY_RESULT_BACKEND': 'CELERY_RESULT_BACKEND',
@@ -204,7 +204,6 @@ CELERY = {
 
 
 # Email config
-
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_USE_TLS = True
@@ -212,3 +211,34 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = 'your_account@gmail.com'
 EMAIL_HOST_PASSWORD = 'password'
 EMAIL_USE_SSL = False
+
+
+# Airbrake config
+AIRBRAKE = dict(
+    project_id=1234,
+    project_key='abcd',
+)
+
+# Log using airbrake
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'airbrake': {
+            'level': 'ERROR',
+            'class': 'pybrake.LoggingHandler',
+        },
+    },
+    'loggers': {
+        'app': {
+            'handlers': ['airbrake'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+    },
+}
+
+# airbrake notifier config
+notifier = pybrake.Notifier(project_id=AIRBRAKE['project_id'],
+                            project_key=AIRBRAKE['project_key'],
+                            environment='production')
