@@ -7,6 +7,7 @@ from .constants import OTP_PREFIX
 from helpers.cache_adapter import CacheAdapter
 from helpers.validators import is_valid_email, is_strong_password, \
     is_valid_mobile_number
+from helpers.s3_helper import upload_to_aws
 
 
 class RegisterUserSerializer(serializers.Serializer):
@@ -16,6 +17,7 @@ class RegisterUserSerializer(serializers.Serializer):
     name = serializers.CharField(required=True, max_length=255)
     mobile_number = serializers.CharField(required=True, max_length=15)
     uuid = serializers.UUIDField(required=False)
+    profile_image = serializers.FileField(required=False)
 
     def does_user_exist(self, **param):
         """
@@ -66,6 +68,14 @@ class RegisterUserSerializer(serializers.Serializer):
         Creates the user in core_user table
         """
         validated_data.pop('confirm_password')
+
+        if 'profile_image' in validated_data:
+            uploaded_url = upload_to_aws(
+                validated_data['profile_image'], 'profile')
+            if uploaded_url is False:
+                validated_data['profile_image'] = None
+            else:
+                validated_data['profile_image'] = uploaded_url
 
         return get_user_model().objects.create_user(**validated_data)
 

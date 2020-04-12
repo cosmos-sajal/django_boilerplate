@@ -242,3 +242,12 @@ LOGGING = {
 notifier = pybrake.Notifier(project_id=AIRBRAKE['project_id'],
                             project_key=AIRBRAKE['project_key'],
                             environment='production')
+
+
+# AWS Creds
+AWS_ACCESS_KEY = 'AWS_ACCESS_KEY'
+AWS_SECRET_KEY = 'AWS_SECRET_KEY'
+AWS_BUCKET_FOLDERS = {
+    'profile': 'profile/',
+    'general': 'general/'
+}
