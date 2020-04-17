@@ -111,6 +111,22 @@ class EmailLoginSerializer(serializers.Serializer):
         return attrs
 
 
+class PasswordResetMailSerializer(serializers.Serializer):
+    email = serializers.CharField(required=True, max_length=255)
+
+    def validate(self, attrs):
+        """
+        Validates if the email id exists in the system
+        """
+        email = attrs.get('email')
+        try:
+            user = get_user_model().objects.get(email=email)
+        except ObjectDoesNotExist:
+            raise Http404
+
+        return attrs
+
+
 class OTPLoginSerializer(serializers.Serializer):
     mobile_number = serializers.CharField(required=True, max_length=15)
     otp = serializers.CharField(required=True)

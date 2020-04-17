@@ -19,3 +19,21 @@ def send_welcome_email(email, name):
         [email],
         fail_silently=False
     )
+
+
+@task(name="send_reset_password_email")
+def send_reset_password_email(email, link):
+    """
+    sends email to the client
+    """
+    logger.info("sending reset password email to - " + email)
+
+    content = "Click the below link to reset your password : " + link
+
+    return send_mail(
+        "Password Reset",
+        content,
+        'sajal.4591@gmail.com',
+        [email],
+        fail_silently=False
+    )

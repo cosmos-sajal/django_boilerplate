@@ -1,16 +1,19 @@
 from django.contrib.auth import get_user_model
+from django.urls import reverse
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework.throttling import UserRateThrottle
 
-from worker.tasks import send_welcome_email
-from .constants import OTP_PREFIX, OTP_EXPIRY_IN_SECONDS
+from worker.tasks import send_welcome_email, send_reset_password_email
+# from worker.reset_email_worker import send_reset_password_email
+from .constants import OTP_PREFIX, OTP_EXPIRY_IN_SECONDS, EMAIL_EXPIRY_IN_SECONDS
 from helpers.cache_adapter import CacheAdapter
-from helpers.misc_helper import get_random_number
+from helpers.misc_helper import get_random_number, get_random_string, \
+    get_domain_url
 from .serializers import RegisterUserSerializer, EmailLoginSerializer, \
-    OTPLoginSerializer, OTPGenerateSerializer
+    OTPLoginSerializer, OTPGenerateSerializer, PasswordResetMailSerializer
 
 
 class RegisterUserView(APIView):
@@ -101,6 +104,39 @@ class GenerateOTPView(APIView):
                 key, get_random_number(), OTP_EXPIRY_IN_SECONDS)
 
             return Response({'response': 'OTP sent'},
+                            status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class PasswordResetView(APIView):
+    pass
+
+
+class PasswordResetMailView(APIView):
+    """
+    Sends an email with a link to reset the password for the user
+    """
+
+    def post(self, request):
+        """
+        POST API -> /api/v1/user/password_reset/mail
+        """
+
+        serializer = PasswordResetMailSerializer(data=request.data)
+        if serializer.is_valid():
+            email = serializer.data['email']
+            random_string = get_random_string(30)
+            key = 'password_reset:' + random_string
+            cache_adapter_obj = CacheAdapter()
+            cache_adapter_obj.set(
+                key, email, EMAIL_EXPIRY_IN_SECONDS)
+            link = get_domain_url(
+                request) + reverse('user:password-reset', args=(random_string,))
+            print(link)
+            send_reset_password_email.delay(email, link)
+
+            return Response({'response': 'Reset email sent!'},
                             status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

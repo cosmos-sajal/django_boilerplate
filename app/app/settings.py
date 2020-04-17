@@ -195,7 +195,7 @@ CELERY_BEAT_SCHEDULE = {
 CELERY = {
     'BROKER_URL': 'BROKER_URL',
     'CELERY_RESULT_BACKEND': 'CELERY_RESULT_BACKEND',
-    'CELERY_IMPORTS': ('worker.tasks', 'crons'),
+    'CELERY_IMPORTS': ('worker.tasks', 'crons',),
     'CELERY_TASK_SERIALIZER': 'json',
     'CELERY_RESULT_SERIALIZER': 'json',
     'CELERY_ACCEPT_CONTENT': ['json'],
