@@ -13,6 +13,6 @@ urlpatterns = [
     path('refresh/token/', TokenRefreshView.as_view(), name='refresh-token'),
     path('password_reset/mail/', PasswordResetMailView.as_view(),
          name='password-reset-mail'),
-    path('password_reset/<str:key>/',
+    path('password_reset/<str:uid>/',
          PasswordResetView.as_view(), name='password-reset')
 ]

@@ -1,5 +1,9 @@
+from django.views import View
 from django.contrib.auth import get_user_model
+from django.template import RequestContext
 from django.urls import reverse
+from django.contrib import messages
+from django.shortcuts import render, render_to_response
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -7,13 +11,13 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework.throttling import UserRateThrottle
 
 from worker.tasks import send_welcome_email, send_reset_password_email
-# from worker.reset_email_worker import send_reset_password_email
 from .constants import OTP_PREFIX, OTP_EXPIRY_IN_SECONDS, EMAIL_EXPIRY_IN_SECONDS
 from helpers.cache_adapter import CacheAdapter
 from helpers.misc_helper import get_random_number, get_random_string, \
     get_domain_url
 from .serializers import RegisterUserSerializer, EmailLoginSerializer, \
     OTPLoginSerializer, OTPGenerateSerializer, PasswordResetMailSerializer
+from .forms import PasswordResetForm
 
 
 class RegisterUserView(APIView):
@@ -109,8 +113,36 @@ class GenerateOTPView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class PasswordResetView(APIView):
-    pass
+class PasswordResetView(View):
+    form_class = PasswordResetForm
+    template_name = 'user/reset_password_form.html'
+
+    def get(self, request, **kwargs):
+        form = self.form_class()
+
+        return render(request, self.template_name, context={'form': form})
+
+    def post(self, request, uid, *arg, **kwargs):
+        form = self.form_class(request.POST)
+        key = 'password_reset:' + uid
+        cache_adapter_obj = CacheAdapter()
+        email = cache_adapter_obj.get(key)
+        if email is None:
+            messages.error(
+                request, 'The reset password link is no longer valid.')
+
+        if form.is_valid():
+            new_password = form.cleaned_data['password']
+            user = get_user_model().objects.get(email=email)
+            user.set_password(new_password)
+            user.save()
+            cache_adapter_obj.delete(key)
+            messages.success(request, 'Password has been reset.')
+        else:
+            messages.error(
+                request, 'Password reset has been unsuccessful.')
+
+        return render(request, self.template_name, context={'form': form})
 
 
 class PasswordResetMailView(APIView):

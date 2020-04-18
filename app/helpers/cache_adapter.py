@@ -18,3 +18,9 @@ class CacheAdapter:
         in cache
         """
         cache.set(key, value, timeout)
+
+    def delete(self, key):
+        """
+        Deletes a specific key from cache
+        """
+        cache.delete(key)
