@@ -53,10 +53,10 @@ class LoginUserView(APIView):
         Returns a User given email/mobile_number
         """
         if "email" in data:
-            return get_user_model().objects.get(email=data['email'])
+            return get_user_model().objects.get(email=data['email'], is_deleted=False)
         else:
             return get_user_model().objects.get(
-                mobile_number=data['mobile_number'])
+                mobile_number=data['mobile_number'], is_deleted=False)
 
     def get_token(self, serializer):
         """

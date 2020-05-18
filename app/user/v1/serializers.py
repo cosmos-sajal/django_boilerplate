@@ -42,7 +42,7 @@ class RegisterUserSerializer(serializers.Serializer):
         if not is_valid_email(email):
             errors['email'] = ["Not a valid email"]
 
-        if self.does_user_exist(email=email):
+        if self.does_user_exist(email=email, is_deleted=False):
             errors['email'] = ["User with this email already exist"]
 
         if not is_strong_password(attrs.get('password')):
@@ -51,7 +51,7 @@ class RegisterUserSerializer(serializers.Serializer):
         if not is_valid_mobile_number(attrs.get('mobile_number')):
             errors['mobile_number'] = ["Not a valid mobile number"]
 
-        if self.does_user_exist(mobile_number=mobile_number):
+        if self.does_user_exist(mobile_number=mobile_number, is_deleted=False):
             errors['mobile_number'] = [
                 "User with this mobile number already exist"]
 
@@ -91,13 +91,13 @@ class EmailLoginSerializer(serializers.Serializer):
         """
         email = attrs.get('email')
         try:
-            get_user_model().objects.get(email=email)
+            user_object = get_user_model().objects.get(email=email, is_deleted=False)
         except ObjectDoesNotExist:
             raise Http404
 
         user = authenticate(
             request=self.context.get('request'),
-            username=attrs.get('email'),
+            username=user_object.id,
             password=attrs.get('password')
         )
 
