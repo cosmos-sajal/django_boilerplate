@@ -14,7 +14,7 @@ Django==2.2.13
 django-redis==4.11.0
 django-request-logging==0.7.1
 django-rest-swagger==2.2.0
-djangorestframework==3.9.1
+djangorestframework==3.11.2
 djangorestframework-simplejwt==4.4.0
 docutils==0.15.2
 entrypoints==0.3
