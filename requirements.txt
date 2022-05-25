@@ -32,7 +32,7 @@ psycopg2==2.8.5
 pybrake==0.4.5
 pycodestyle==2.5.0
 pyflakes==2.1.1
-PyJWT==1.7.1
+PyJWT==2.4.0
 python-dateutil==2.8.1
 pytz==2019.3
 pyudorandom==1.0.0
